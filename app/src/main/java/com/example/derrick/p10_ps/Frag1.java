@@ -18,7 +18,6 @@ import java.util.zip.CheckedOutputStream;
  * A simple {@link Fragment} subclass.
  */
 public class Frag1 extends Fragment {
-
     ArrayList<Integer> alColour;
     Button btnChange;
     public Frag1() {

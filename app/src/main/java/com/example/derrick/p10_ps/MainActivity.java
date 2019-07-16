@@ -1,6 +1,10 @@
 package com.example.derrick.p10_ps;
 
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,10 +14,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,12 +29,14 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences sp;
     ArrayList<Fragment> al;
     MyFragmentPagerAdapter adapter;
+    AlarmManager am;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         viewPager = findViewById(R.id.viewPager);
+        btnRead = findViewById(R.id.btnRead);
         sp = getSharedPreferences(USER_PREF, Context.MODE_PRIVATE);
         FragmentManager fm = getSupportFragmentManager();
         al = new ArrayList<Fragment>();
@@ -38,7 +46,30 @@ public class MainActivity extends AppCompatActivity {
 
         adapter = new MyFragmentPagerAdapter(fm, al);
         viewPager.setAdapter(adapter);
+        btnRead.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.SECOND, 5);
 
+                //Create a new PendingIntent and add it to the AlarmManager
+                Intent intent = new Intent(MainActivity.this,
+                        MainActivity.class);
+                int reqCode = 12345;
+                PendingIntent pendingIntent =
+                        PendingIntent.getActivity(MainActivity.this,
+                                reqCode, intent,
+                                PendingIntent.FLAG_CANCEL_CURRENT);
+
+                // Get AlarmManager instance
+                am = (AlarmManager)
+                        getSystemService(Activity.ALARM_SERVICE);
+
+                // Set the alarm
+                am.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
+                        pendingIntent);
+            }
+        });
     }
 
     @Override
@@ -107,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
         Log.i("Random", Integer.toString(random));
         viewPager.setCurrentItem(random,true);
     }
+
 
 
 }
